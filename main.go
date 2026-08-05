@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -87,6 +88,14 @@ func main() {
 		ready.Store(true)
 	}()
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	serverAddr := ":" + port
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", healthHandler)
 	mux.HandleFunc("GET /tasks", getTasksHandler)
@@ -94,6 +103,6 @@ func main() {
 	mux.HandleFunc("GET /ready", readyHandler)
 	mux.Handle("GET /metrics", promhttp.Handler())
 
-	log.Println("listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	log.Printf("listening on %s\n", serverAddr)
+	log.Fatal(http.ListenAndServe(serverAddr, mux))
 }
