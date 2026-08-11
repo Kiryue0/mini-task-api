@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mini-task-api-config
+data:
+  PORT: "9090"
+  APP_NAME: "mini-task-api"

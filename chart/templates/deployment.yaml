@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        - secretRef:
+            name: {{ .Release.Name }}-secret
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.targetPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: {{ .Values.service.targetPort }}
+          initialDelaySeconds: 2
+          periodSeconds: 5
+      imagePullSecrets:
+      - name: ghcr-giris-bilgilerim

@@ -14,8 +14,25 @@ spec:
     spec:
       containers:
       - name: mini-task-api
-        image: ghcr.io/kiryue0/mini-task-api:v0.1
+        image: ghcr.io/kiryue0/mini-task-api:v0.2
         ports:
-        - containerPort: 8080
+        - containerPort: 9090
+        envFrom:
+        - configMapRef:
+            name: mini-task-api-config
+        - secretRef:
+            name: mini-task-api-secret
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 9090
+          initialDelaySeconds: 2
+          periodSeconds: 5
       imagePullSecrets:
       - name: ghcr-giris-bilgilerim

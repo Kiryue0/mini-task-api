@@ -1,0 +1,19 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: GoTool@0
+    inputs:
+      version: '1.24'
+    displayName: 'Go kur'
+
+  - script: |
+      go build ./...
+    displayName: 'Build'
+
+  - script: |
+      go test ./...
+    displayName: 'Test'
