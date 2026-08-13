@@ -1,3 +1,12 @@
+trigger:
+  - main
+
+pool:
+  name: Default
+
+variables:
+  imageName: ghcr.io/kiryue0/mini-task-api
+
 steps:
   - script: go build ./...
     displayName: 'Build'
