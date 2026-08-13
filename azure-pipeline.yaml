@@ -2,18 +2,25 @@ trigger:
   - main
 
 pool:
-  name: 'Default'
+  name: Default
+
+variables:
+  imageName: ghcr.io/kiryue0/mini-task-api
 
 steps:
-  - task: GoTool@0
-    inputs:
-      version: '1.24'
-    displayName: 'Go kur'
-
-  - script: |
-      go build ./...
+  - script: go build ./...
     displayName: 'Build'
 
-  - script: |
-      go test ./...
+  - script: go test ./...
     displayName: 'Test'
+
+  - script: docker build -t $(imageName):$(Build.BuildId) .
+    displayName: 'Docker build'
+
+  - script: echo $GHCR_TOKEN | docker login ghcr.io -u kiryue0 --password-stdin
+    displayName: 'GHCR login'
+    env:
+      GHCR_TOKEN: $(GHCR_TOKEN)
+
+  - script: docker push $(imageName):$(Build.BuildId)
+    displayName: 'GHCR push'
