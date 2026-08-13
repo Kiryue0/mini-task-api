@@ -1,18 +1,18 @@
-trigger:
-  - main
-
-pool:
-  name: Default
-
-variables:
-  imageName: ghcr.io/kiryue0/mini-task-api
-
 steps:
   - script: go build ./...
     displayName: 'Build'
 
   - script: go test ./...
     displayName: 'Test'
+
+  - script: |
+      go install github.com/securego/gosec/v2/cmd/gosec@latest
+      $(go env GOPATH)/bin/gosec ./...
+    displayName: 'gosec - Go security scan'
+
+  - script: |
+      docker run --rm -v $(pwd):/repo zricethezav/gitleaks:latest detect --source=/repo --verbose
+    displayName: 'gitleaks - secret scan'
 
   - script: docker build -t $(imageName):$(Build.BuildId) .
     displayName: 'Docker build'
