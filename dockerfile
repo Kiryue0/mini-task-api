@@ -13,6 +13,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o mini-task-api .
 # ---- Final stage ----
 FROM alpine:latest
 
+RUN apk update && apk upgrade --no-cache
+
 RUN adduser -D -u 10001 appuser
 
 WORKDIR /app
