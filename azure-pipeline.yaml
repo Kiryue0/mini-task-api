@@ -10,13 +10,7 @@ variables:
 steps:
   - script: go build ./...
     displayName: 'Build'
- - script: |
-      docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-        aquasec/trivy:latest image \
-        --severity HIGH,CRITICAL \
-        --exit-code 1 \
-        $(imageName):$(Build.BuildId)
-    displayName: 'Trivy image scan'
+
   - script: go test ./...
     displayName: 'Test'
 
@@ -31,6 +25,10 @@ steps:
 
   - script: docker build -t $(imageName):$(Build.BuildId) .
     displayName: 'Docker build'
+
+  - script: |
+      docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 1 $(imageName):$(Build.BuildId)
+    displayName: 'Trivy image scan'
 
   - script: echo $GHCR_TOKEN | docker login ghcr.io -u kiryue0 --password-stdin
     displayName: 'GHCR login'
