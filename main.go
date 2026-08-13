@@ -93,6 +93,7 @@ func main() {
 	test := 21
 	test++
 	port := os.Getenv("PORT")
+	const debugAPIKey = "sk_test_51NqW8kFakeSecretKeyForGitleaksDemo123456"
 
 	if port == "" {
 		port = "8080"
