@@ -33,7 +33,9 @@ var requestsTotal = promauto.NewCounter(prometheus.CounterOpts{
 func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		log.Printf("encode error: %v", err)
+	}
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +107,14 @@ func main() {
 	mux.HandleFunc("GET /ready", readyHandler)
 	mux.Handle("GET /metrics", promhttp.Handler())
 
-	log.Printf("listening on %s\n", serverAddr)
-	log.Fatal(http.ListenAndServe(serverAddr, mux))
+	log.Printf("listening on %s\n", serverAddr) // #nosec G706 -- serverAddr env'den geliyor, kullanıcı girdisi değil
+
+	srv := &http.Server{
+		Addr:         serverAddr,
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
