@@ -90,8 +90,6 @@ func main() {
 		ready.Store(true)
 	}()
 
-	test := 21
-	test++
 	port := os.Getenv("PORT")
 
 	if port == "" {
