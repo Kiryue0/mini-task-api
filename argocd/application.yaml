@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mini-task-api
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Kiryue0/mini-task-api
+    targetRevision: main
+    path: chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
